@@ -1,6 +1,6 @@
 #!/bin/bash
 
-retype_version="3.0.3"
+retype_version="3.6.0"
 
 use_dotnet=false
 _ifs="${IFS}"
@@ -25,10 +25,10 @@ fi
 echo "Working directory is: $(pwd)"
 
 # We prefer dotnet if available as the package size is (much) smaller.
-if which dotnet > /dev/null 2>&1 && [ "$(dotnet --version | cut -f1 -d.)" == "5" ]; then
+if which dotnet > /dev/null 2>&1 && [ "$(dotnet --version | cut -f1 -d.)" -ge 5 ]; then
   use_dotnet=true
 elif ! which node > /dev/null 2>&1 || [ "$(node --version | cut -f1 -d. | cut -b2-)" -lt 14 ]; then
-  fail "Can't find suitable dotnet or node installation to install retype package with."
+  fail "Cannot find a suitable dotnet or node installation to install the retype package with."
 fi
 
 retype_path="$(which retype 2> /dev/null)"
@@ -138,6 +138,11 @@ if [ ! -z "${INPUT_OVERRIDE_BASE}" ]; then
   echo -n "base, "
   overridestr="$(append_json "${overridestr}" "base" "${INPUT_OVERRIDE_BASE}")" || \
     fail_nl "Unable to append 'base' setting while building the 'retype build' argument list."
+fi
+
+if [ "${INPUT_STRICT}" == "true" ]; then
+  echo -n "strict mode, "
+  cmdargs+=("--strict")
 fi
 
 if [ ! -z "${INPUT_LICENSE_KEY}" ]; then

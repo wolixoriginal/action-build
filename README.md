@@ -14,7 +14,7 @@ This action will look for a [`retype.yml`](https://retype.com/configuration/proj
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
+- uses: actions/checkout@v3
 
 - uses: retypeapp/action-build@latest
 ```
@@ -27,7 +27,7 @@ The workflow file above would then become:
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
+- uses: actions/checkout@v3
 
 - uses: actions/setup-dotnet@v1
   with:
@@ -50,7 +50,25 @@ Specifies the path where `retype.yml` file should be located or path to the spec
 
 Specifies the license key to be used with Retype.
 
-**NOTICE**: The `license` key value cannot be saved directly to your configuration file. To pass the license key to Retype, the value must be passed as a GitHub Secret. For information on how to store a secret on your repository or organization, see [Encrypted Secrets documentation](https://docs.github.com/en/actions/reference/encrypted-secrets).
+```yaml
+- uses: retypeapp/action-build@latest
+  with:
+    license: ${{ secrets.RETYPE_LICENSE_KEY }}
+```
+
+**NOTICE**: The `license` key value cannot be saved directly to your configuration file. To pass the license key to Retype during the build process, the value must be passed as a GitHub Secret. For information on how to store a secret on your repository or organization, see [RETYPE_SECRET](https://retype.com/configuration/envvars/#retype_secret) docs.
+
+### `strict`
+
+This config is Retype [!badge PRO](https://retype.com/pro/) only.
+
+To enable [`--strict`](https://retype.com/guides/cli/#options-2) mode during build. Return a non-zero exit code if the build had errors or warnings.
+
+```yaml
+- uses: retypeapp/action-build@latest
+  with:
+    strict: true
+```
 
 ## Examples
 
@@ -71,7 +89,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: retypeapp/action-build@latest
 ```
@@ -126,11 +144,11 @@ The config file may have a different file name
 In a bit more complex scenario where various repositories are checked out in a workflow. This may be useful, for instance, if retype documentation is generated from files across different repositories.
 
 ```yaml
-- uses: actions/checkout@v2
+- uses: actions/checkout@v3
   with:
     path: own-repository
 
-- uses: actions/checkout@v2
+- uses: actions/checkout@v3
   with:
     repository: organization/repository-name
     path: auxiliary-repository
@@ -182,8 +200,26 @@ The following sample demonstrates configuring the Retype `action-github-pages` a
 ```yaml
 - uses: retypeapp/action-build@latest
 
-- uses: retypeapp/action-github-pages@v2
+- uses: retypeapp/action-github-pages@latest
   with:
     branch: retype
     update-branch: true
+```
+
+## Testing with a specific branch of the retypepp action
+
+You can test with a specific branch of the retypapp action by replacing the `@latest` with the `@branch-name-here`.
+
+```yaml
+- uses: retypeapp/action-build@branch-name-here
+```
+
+## Build in `--strict` mode
+
+Return a non-zero exit code if the build had errors or warnings. Set `true` to enable stict mode.
+
+```yaml
+- uses: retypeapp/action-build@latest
+  with:
+    strict: true
 ```
